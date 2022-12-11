@@ -1,0 +1,400 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package org.apache.archiva.redback.tests;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">/*</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Licensed to the Apache Software Foundation (ASF) under one</a>
+<span class="sourceLineNo">005</span><a id="line.5"> * or more contributor license agreements.  See the NOTICE file</a>
+<span class="sourceLineNo">006</span><a id="line.6"> * distributed with this work for additional information</a>
+<span class="sourceLineNo">007</span><a id="line.7"> * regarding copyright ownership.  The ASF licenses this file</a>
+<span class="sourceLineNo">008</span><a id="line.8"> * to you under the Apache License, Version 2.0 (the</a>
+<span class="sourceLineNo">009</span><a id="line.9"> * "License"); you may not use this file except in compliance</a>
+<span class="sourceLineNo">010</span><a id="line.10"> * with the License.  You may obtain a copy of the License at</a>
+<span class="sourceLineNo">011</span><a id="line.11"> *</a>
+<span class="sourceLineNo">012</span><a id="line.12"> * http://www.apache.org/licenses/LICENSE-2.0</a>
+<span class="sourceLineNo">013</span><a id="line.13"> *</a>
+<span class="sourceLineNo">014</span><a id="line.14"> * Unless required by applicable law or agreed to in writing,</a>
+<span class="sourceLineNo">015</span><a id="line.15"> * software distributed under the License is distributed on an</a>
+<span class="sourceLineNo">016</span><a id="line.16"> * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</a>
+<span class="sourceLineNo">017</span><a id="line.17"> * KIND, either express or implied.  See the License for the</a>
+<span class="sourceLineNo">018</span><a id="line.18"> * specific language governing permissions and limitations</a>
+<span class="sourceLineNo">019</span><a id="line.19"> * under the License.</a>
+<span class="sourceLineNo">020</span><a id="line.20"> */</a>
+<span class="sourceLineNo">021</span><a id="line.21">import junit.framework.TestCase;</a>
+<span class="sourceLineNo">022</span><a id="line.22">import org.apache.archiva.redback.rbac.Permission;</a>
+<span class="sourceLineNo">023</span><a id="line.23">import org.apache.archiva.redback.rbac.RBACManager;</a>
+<span class="sourceLineNo">024</span><a id="line.24">import org.apache.archiva.redback.rbac.RbacManagerException;</a>
+<span class="sourceLineNo">025</span><a id="line.25">import org.apache.archiva.redback.rbac.Resource;</a>
+<span class="sourceLineNo">026</span><a id="line.26">import org.apache.archiva.redback.rbac.Role;</a>
+<span class="sourceLineNo">027</span><a id="line.27">import org.apache.archiva.redback.rbac.UserAssignment;</a>
+<span class="sourceLineNo">028</span><a id="line.28">import org.apache.archiva.redback.rbac.Operation;</a>
+<span class="sourceLineNo">029</span><a id="line.29">import org.apache.archiva.redback.tests.utils.RBACDefaults;</a>
+<span class="sourceLineNo">030</span><a id="line.30">import org.junit.Test;</a>
+<span class="sourceLineNo">031</span><a id="line.31">import org.junit.runner.RunWith;</a>
+<span class="sourceLineNo">032</span><a id="line.32">import org.slf4j.Logger;</a>
+<span class="sourceLineNo">033</span><a id="line.33">import org.slf4j.LoggerFactory;</a>
+<span class="sourceLineNo">034</span><a id="line.34">import org.springframework.test.context.ContextConfiguration;</a>
+<span class="sourceLineNo">035</span><a id="line.35">import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;</a>
+<span class="sourceLineNo">036</span><a id="line.36"></a>
+<span class="sourceLineNo">037</span><a id="line.37">import java.util.Collections;</a>
+<span class="sourceLineNo">038</span><a id="line.38"></a>
+<span class="sourceLineNo">039</span><a id="line.39">@RunWith( SpringJUnit4ClassRunner.class )</a>
+<span class="sourceLineNo">040</span><a id="line.40">@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )</a>
+<span class="sourceLineNo">041</span><a id="line.41">public class AbstractRbacManagerPerformanceTestCase</a>
+<span class="sourceLineNo">042</span><a id="line.42">    extends TestCase</a>
+<span class="sourceLineNo">043</span><a id="line.43">{</a>
+<span class="sourceLineNo">044</span><a id="line.44">    private RBACManager rbacManager;</a>
+<span class="sourceLineNo">045</span><a id="line.45"></a>
+<span class="sourceLineNo">046</span><a id="line.46">    private RBACDefaults rbacDefaults;</a>
+<span class="sourceLineNo">047</span><a id="line.47"></a>
+<span class="sourceLineNo">048</span><a id="line.48">    protected Logger logger = LoggerFactory.getLogger( getClass() );</a>
+<span class="sourceLineNo">049</span><a id="line.49"></a>
+<span class="sourceLineNo">050</span><a id="line.50">    public void setRbacManager( RBACManager store )</a>
+<span class="sourceLineNo">051</span><a id="line.51">    {</a>
+<span class="sourceLineNo">052</span><a id="line.52">        this.rbacManager = store;</a>
+<span class="sourceLineNo">053</span><a id="line.53">        rbacDefaults = new RBACDefaults( rbacManager );</a>
+<span class="sourceLineNo">054</span><a id="line.54">    }</a>
+<span class="sourceLineNo">055</span><a id="line.55"></a>
+<span class="sourceLineNo">056</span><a id="line.56">    public void setUp()</a>
+<span class="sourceLineNo">057</span><a id="line.57">        throws Exception</a>
+<span class="sourceLineNo">058</span><a id="line.58">    {</a>
+<span class="sourceLineNo">059</span><a id="line.59">        super.setUp();</a>
+<span class="sourceLineNo">060</span><a id="line.60">    }</a>
+<span class="sourceLineNo">061</span><a id="line.61"></a>
+<span class="sourceLineNo">062</span><a id="line.62">    public void tearDown()</a>
+<span class="sourceLineNo">063</span><a id="line.63">        throws Exception</a>
+<span class="sourceLineNo">064</span><a id="line.64">    {</a>
+<span class="sourceLineNo">065</span><a id="line.65">        super.tearDown();</a>
+<span class="sourceLineNo">066</span><a id="line.66">    }</a>
+<span class="sourceLineNo">067</span><a id="line.67"></a>
+<span class="sourceLineNo">068</span><a id="line.68">    private Role getDeveloperRole()</a>
+<span class="sourceLineNo">069</span><a id="line.69">        throws RbacManagerException</a>
+<span class="sourceLineNo">070</span><a id="line.70">    {</a>
+<span class="sourceLineNo">071</span><a id="line.71">        Role role = rbacManager.createRole( "DEVELOPER" );</a>
+<span class="sourceLineNo">072</span><a id="line.72">        role.setAssignable( true );</a>
+<span class="sourceLineNo">073</span><a id="line.73"></a>
+<span class="sourceLineNo">074</span><a id="line.74">        Permission perm = rbacManager.createPermission( "EDIT_MY_USER", "EDIT", "User:Self" );</a>
+<span class="sourceLineNo">075</span><a id="line.75"></a>
+<span class="sourceLineNo">076</span><a id="line.76">        role.addPermission( perm );</a>
+<span class="sourceLineNo">077</span><a id="line.77"></a>
+<span class="sourceLineNo">078</span><a id="line.78">        return role;</a>
+<span class="sourceLineNo">079</span><a id="line.79">    }</a>
+<span class="sourceLineNo">080</span><a id="line.80">    </a>
+<span class="sourceLineNo">081</span><a id="line.81">    private Role getSuperDeveloperRole()</a>
+<span class="sourceLineNo">082</span><a id="line.82">    {</a>
+<span class="sourceLineNo">083</span><a id="line.83">        Role role = rbacManager.createRole( "SUPER_DEVELOPER" );</a>
+<span class="sourceLineNo">084</span><a id="line.84">        role.setAssignable( true );</a>
+<span class="sourceLineNo">085</span><a id="line.85"></a>
+<span class="sourceLineNo">086</span><a id="line.86">        return role;</a>
+<span class="sourceLineNo">087</span><a id="line.87">    }</a>
+<span class="sourceLineNo">088</span><a id="line.88"></a>
+<span class="sourceLineNo">089</span><a id="line.89">    private static final int ITERATIONS = 10000;</a>
+<span class="sourceLineNo">090</span><a id="line.90"></a>
+<span class="sourceLineNo">091</span><a id="line.91">    private static final int ONESECOND = 1000;</a>
+<span class="sourceLineNo">092</span><a id="line.92"></a>
+<span class="sourceLineNo">093</span><a id="line.93">    public void assertPerformance( String msg, long startTime, long endTime, int iterations, double threshold )</a>
+<span class="sourceLineNo">094</span><a id="line.94">    {</a>
+<span class="sourceLineNo">095</span><a id="line.95">        long elapsed = endTime - startTime;</a>
+<span class="sourceLineNo">096</span><a id="line.96">        double ratio = (double) elapsed / (double) ONESECOND; // ratio of time to 1 second.</a>
+<span class="sourceLineNo">097</span><a id="line.97">        double opsPerSecond = (double) iterations / ratio;</a>
+<span class="sourceLineNo">098</span><a id="line.98"></a>
+<span class="sourceLineNo">099</span><a id="line.99">        logger.info( "Performance {}: {} operations per second. (effective)", msg, opsPerSecond );</a>
+<span class="sourceLineNo">100</span><a id="line.100"></a>
+<span class="sourceLineNo">101</span><a id="line.101">        if ( opsPerSecond &lt; threshold )</a>
+<span class="sourceLineNo">102</span><a id="line.102">        {</a>
+<span class="sourceLineNo">103</span><a id="line.103">            // Failure</a>
+<span class="sourceLineNo">104</span><a id="line.104"></a>
+<span class="sourceLineNo">105</span><a id="line.105">            StringBuilder stats = new StringBuilder();</a>
+<span class="sourceLineNo">106</span><a id="line.106"></a>
+<span class="sourceLineNo">107</span><a id="line.107">            stats.append( "Stats on " ).append( msg );</a>
+<span class="sourceLineNo">108</span><a id="line.108">            stats.append( "\nStart Time (ms): " ).append( Long.toString( startTime ) );</a>
+<span class="sourceLineNo">109</span><a id="line.109">            stats.append( "\nEnd Time (ms)  : " ).append( Long.toString( endTime ) );</a>
+<span class="sourceLineNo">110</span><a id="line.110">            stats.append( "\nElapsed (ms)   : " ).append( Long.toString( elapsed ) );</a>
+<span class="sourceLineNo">111</span><a id="line.111">            stats.append( "\nRatio          : " ).append( Double.toString( ratio ) );</a>
+<span class="sourceLineNo">112</span><a id="line.112">            stats.append( "\nOps per second : " ).append( Double.toString( opsPerSecond ) );</a>
+<span class="sourceLineNo">113</span><a id="line.113"></a>
+<span class="sourceLineNo">114</span><a id="line.114">            logger.info( stats.toString() );</a>
+<span class="sourceLineNo">115</span><a id="line.115"></a>
+<span class="sourceLineNo">116</span><a id="line.116">            fail( "Performance Error: " + msg + " expecting greater than [" + threshold + "], actual [" + opsPerSecond</a>
+<span class="sourceLineNo">117</span><a id="line.117">                + "]" );</a>
+<span class="sourceLineNo">118</span><a id="line.118">        }</a>
+<span class="sourceLineNo">119</span><a id="line.119">    }</a>
+<span class="sourceLineNo">120</span><a id="line.120"></a>
+<span class="sourceLineNo">121</span><a id="line.121">    @Test</a>
+<span class="sourceLineNo">122</span><a id="line.122">    public void testPerformanceResource()</a>
+<span class="sourceLineNo">123</span><a id="line.123">        throws RbacManagerException</a>
+<span class="sourceLineNo">124</span><a id="line.124">    {</a>
+<span class="sourceLineNo">125</span><a id="line.125">        assertNotNull( rbacManager );</a>
+<span class="sourceLineNo">126</span><a id="line.126">        rbacManager.eraseDatabase();</a>
+<span class="sourceLineNo">127</span><a id="line.127"></a>
+<span class="sourceLineNo">128</span><a id="line.128">        Resource resource = rbacManager.createResource( "foo" );</a>
+<span class="sourceLineNo">129</span><a id="line.129">        Resource resource2 = rbacManager.createResource( "bar" );</a>
+<span class="sourceLineNo">130</span><a id="line.130"></a>
+<span class="sourceLineNo">131</span><a id="line.131">        assertNotNull( resource );</a>
+<span class="sourceLineNo">132</span><a id="line.132"></a>
+<span class="sourceLineNo">133</span><a id="line.133">        Resource added = rbacManager.saveResource( resource );</a>
+<span class="sourceLineNo">134</span><a id="line.134">        assertNotNull( added );</a>
+<span class="sourceLineNo">135</span><a id="line.135">        Resource added2 = rbacManager.saveResource( resource2 );</a>
+<span class="sourceLineNo">136</span><a id="line.136">        assertNotNull( added2 );</a>
+<span class="sourceLineNo">137</span><a id="line.137"></a>
+<span class="sourceLineNo">138</span><a id="line.138">        assertEquals( 2, rbacManager.getAllResources().size() );</a>
+<span class="sourceLineNo">139</span><a id="line.139"></a>
+<span class="sourceLineNo">140</span><a id="line.140">        String resFooId = resource.getIdentifier();</a>
+<span class="sourceLineNo">141</span><a id="line.141">        String resBarId = resource2.getIdentifier();</a>
+<span class="sourceLineNo">142</span><a id="line.142">        long startTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">143</span><a id="line.143"></a>
+<span class="sourceLineNo">144</span><a id="line.144">        for ( int i = 0; i &lt;= ITERATIONS; i++ )</a>
+<span class="sourceLineNo">145</span><a id="line.145">        {</a>
+<span class="sourceLineNo">146</span><a id="line.146">            Resource resFoo = rbacManager.getResource( resFooId );</a>
+<span class="sourceLineNo">147</span><a id="line.147">            Resource resBar = rbacManager.getResource( resBarId );</a>
+<span class="sourceLineNo">148</span><a id="line.148"></a>
+<span class="sourceLineNo">149</span><a id="line.149">            assertNotNull( resFoo );</a>
+<span class="sourceLineNo">150</span><a id="line.150">            assertNotNull( resBar );</a>
+<span class="sourceLineNo">151</span><a id="line.151"></a>
+<span class="sourceLineNo">152</span><a id="line.152">            assertEquals( "foo", resFoo.getIdentifier() );</a>
+<span class="sourceLineNo">153</span><a id="line.153">            assertEquals( "bar", resBar.getIdentifier() );</a>
+<span class="sourceLineNo">154</span><a id="line.154">        }</a>
+<span class="sourceLineNo">155</span><a id="line.155"></a>
+<span class="sourceLineNo">156</span><a id="line.156">        long endTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">157</span><a id="line.157"></a>
+<span class="sourceLineNo">158</span><a id="line.158">        assertPerformance( "Resource", startTime, endTime, ITERATIONS, 500.0 );</a>
+<span class="sourceLineNo">159</span><a id="line.159">    }</a>
+<span class="sourceLineNo">160</span><a id="line.160"></a>
+<span class="sourceLineNo">161</span><a id="line.161">    @Test</a>
+<span class="sourceLineNo">162</span><a id="line.162">    public void testPerformanceUserAssignment()</a>
+<span class="sourceLineNo">163</span><a id="line.163">        throws RbacManagerException</a>
+<span class="sourceLineNo">164</span><a id="line.164">    {</a>
+<span class="sourceLineNo">165</span><a id="line.165">        RBACManager manager = rbacManager;</a>
+<span class="sourceLineNo">166</span><a id="line.166"></a>
+<span class="sourceLineNo">167</span><a id="line.167">        rbacManager.eraseDatabase();</a>
+<span class="sourceLineNo">168</span><a id="line.168"></a>
+<span class="sourceLineNo">169</span><a id="line.169">        Role devRole = getDeveloperRole();</a>
+<span class="sourceLineNo">170</span><a id="line.170">        Role devPlusRole = getSuperDeveloperRole();</a>
+<span class="sourceLineNo">171</span><a id="line.171">        devPlusRole.setChildRoleNames( Collections.singletonList( devRole.getName() ) );</a>
+<span class="sourceLineNo">172</span><a id="line.172">        devPlusRole.setChildRoleIds( Collections.singletonList( devRole.getId() ) );</a>
+<span class="sourceLineNo">173</span><a id="line.173">        devRole = manager.saveRole( devRole );</a>
+<span class="sourceLineNo">174</span><a id="line.174">        devPlusRole = manager.saveRole( devPlusRole );</a>
+<span class="sourceLineNo">175</span><a id="line.175"></a>
+<span class="sourceLineNo">176</span><a id="line.176">        // Setup User / Assignment with 1 role.</a>
+<span class="sourceLineNo">177</span><a id="line.177">        String username = "bob";</a>
+<span class="sourceLineNo">178</span><a id="line.178">        UserAssignment assignment = manager.createUserAssignment( username );</a>
+<span class="sourceLineNo">179</span><a id="line.179">        assignment.addRoleId( devRole );</a>
+<span class="sourceLineNo">180</span><a id="line.180">        assignment = manager.saveUserAssignment( assignment );</a>
+<span class="sourceLineNo">181</span><a id="line.181"></a>
+<span class="sourceLineNo">182</span><a id="line.182">        assertEquals( 1, manager.getAllUserAssignments().size() );</a>
+<span class="sourceLineNo">183</span><a id="line.183">        assertEquals( "should be only one role assigned", 1, manager.getAssignedRoles( assignment.getPrincipal() )</a>
+<span class="sourceLineNo">184</span><a id="line.184">            .size() );</a>
+<span class="sourceLineNo">185</span><a id="line.185">        assertEquals( "should be one role left to assign", 1, manager.getUnassignedRoles( assignment.getPrincipal() )</a>
+<span class="sourceLineNo">186</span><a id="line.186">            .size() );</a>
+<span class="sourceLineNo">187</span><a id="line.187">        assertEquals( 2, manager.getAllRoles().size() );</a>
+<span class="sourceLineNo">188</span><a id="line.188"></a>
+<span class="sourceLineNo">189</span><a id="line.189">        // assign the same role again to the same user</a>
+<span class="sourceLineNo">190</span><a id="line.190">        assignment.addRoleId( devRole.getId() );</a>
+<span class="sourceLineNo">191</span><a id="line.191">        manager.saveUserAssignment( assignment );</a>
+<span class="sourceLineNo">192</span><a id="line.192"></a>
+<span class="sourceLineNo">193</span><a id="line.193">        // we certainly shouldn't have 2 roles here now</a>
+<span class="sourceLineNo">194</span><a id="line.194">        assertEquals( 1, assignment.getRoleIds().size() );</a>
+<span class="sourceLineNo">195</span><a id="line.195"></a>
+<span class="sourceLineNo">196</span><a id="line.196">        String bobId = assignment.getPrincipal();</a>
+<span class="sourceLineNo">197</span><a id="line.197"></a>
+<span class="sourceLineNo">198</span><a id="line.198">        username = "janet";</a>
+<span class="sourceLineNo">199</span><a id="line.199"></a>
+<span class="sourceLineNo">200</span><a id="line.200">        devPlusRole.setChildRoleNames( Collections.singletonList( devRole.getName() ) );</a>
+<span class="sourceLineNo">201</span><a id="line.201">        devPlusRole.setChildRoleIds( Collections.singletonList( devRole.getId() ) );</a>
+<span class="sourceLineNo">202</span><a id="line.202">        devRole = manager.saveRole( devRole );</a>
+<span class="sourceLineNo">203</span><a id="line.203">        manager.saveRole( devPlusRole );</a>
+<span class="sourceLineNo">204</span><a id="line.204"></a>
+<span class="sourceLineNo">205</span><a id="line.205">        assignment = manager.createUserAssignment( username );</a>
+<span class="sourceLineNo">206</span><a id="line.206">        assignment.addRoleId( devRole );</a>
+<span class="sourceLineNo">207</span><a id="line.207">        assignment = manager.saveUserAssignment( assignment );</a>
+<span class="sourceLineNo">208</span><a id="line.208"></a>
+<span class="sourceLineNo">209</span><a id="line.209">        assertEquals( 2, manager.getAllUserAssignments().size() );</a>
+<span class="sourceLineNo">210</span><a id="line.210">        assertEquals( "should be only one role assigned", 1, manager.getAssignedRoles( assignment.getPrincipal() )</a>
+<span class="sourceLineNo">211</span><a id="line.211">            .size() );</a>
+<span class="sourceLineNo">212</span><a id="line.212">        assertEquals( "should be one role left to assign", 1, manager.getUnassignedRoles( assignment.getPrincipal() )</a>
+<span class="sourceLineNo">213</span><a id="line.213">            .size() );</a>
+<span class="sourceLineNo">214</span><a id="line.214">        assertEquals( 2, manager.getAllRoles().size() );</a>
+<span class="sourceLineNo">215</span><a id="line.215"></a>
+<span class="sourceLineNo">216</span><a id="line.216">        // assign the same role again to the same user</a>
+<span class="sourceLineNo">217</span><a id="line.217">        assignment.addRoleId( devRole.getId() );</a>
+<span class="sourceLineNo">218</span><a id="line.218">        manager.saveUserAssignment( assignment );</a>
+<span class="sourceLineNo">219</span><a id="line.219"></a>
+<span class="sourceLineNo">220</span><a id="line.220">        // we certainly shouldn't have 2 roles here now</a>
+<span class="sourceLineNo">221</span><a id="line.221">        assertEquals( 1, assignment.getRoleIds().size() );</a>
+<span class="sourceLineNo">222</span><a id="line.222"></a>
+<span class="sourceLineNo">223</span><a id="line.223">        String janetId = assignment.getPrincipal();</a>
+<span class="sourceLineNo">224</span><a id="line.224"></a>
+<span class="sourceLineNo">225</span><a id="line.225">        long startTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">226</span><a id="line.226"></a>
+<span class="sourceLineNo">227</span><a id="line.227">        for ( int i = 0; i &lt;= ITERATIONS; i++ )</a>
+<span class="sourceLineNo">228</span><a id="line.228">        {</a>
+<span class="sourceLineNo">229</span><a id="line.229">            UserAssignment uaBob = rbacManager.getUserAssignment( bobId );</a>
+<span class="sourceLineNo">230</span><a id="line.230">            UserAssignment uaJanet = rbacManager.getUserAssignment( janetId );</a>
+<span class="sourceLineNo">231</span><a id="line.231"></a>
+<span class="sourceLineNo">232</span><a id="line.232">            assertNotNull( uaBob );</a>
+<span class="sourceLineNo">233</span><a id="line.233">            assertNotNull( uaJanet );</a>
+<span class="sourceLineNo">234</span><a id="line.234"></a>
+<span class="sourceLineNo">235</span><a id="line.235">            assertEquals( "bob", uaBob.getPrincipal() );</a>
+<span class="sourceLineNo">236</span><a id="line.236">            assertEquals( "janet", uaJanet.getPrincipal() );</a>
+<span class="sourceLineNo">237</span><a id="line.237">        }</a>
+<span class="sourceLineNo">238</span><a id="line.238"></a>
+<span class="sourceLineNo">239</span><a id="line.239">        long endTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">240</span><a id="line.240">        assertPerformance( "UserAssignment", startTime, endTime, ITERATIONS, 350.0 );</a>
+<span class="sourceLineNo">241</span><a id="line.241">    }</a>
+<span class="sourceLineNo">242</span><a id="line.242"></a>
+<span class="sourceLineNo">243</span><a id="line.243">    @Test</a>
+<span class="sourceLineNo">244</span><a id="line.244">    public void testPerformanceRoles()</a>
+<span class="sourceLineNo">245</span><a id="line.245">        throws RbacManagerException</a>
+<span class="sourceLineNo">246</span><a id="line.246">    {</a>
+<span class="sourceLineNo">247</span><a id="line.247">        rbacDefaults.createDefaults();</a>
+<span class="sourceLineNo">248</span><a id="line.248"></a>
+<span class="sourceLineNo">249</span><a id="line.249">        String roleIdSysAdmin = "System Administrator";</a>
+<span class="sourceLineNo">250</span><a id="line.250">        String roleIdUserAdmin = "User Administrator";</a>
+<span class="sourceLineNo">251</span><a id="line.251"></a>
+<span class="sourceLineNo">252</span><a id="line.252">        long startTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">253</span><a id="line.253"></a>
+<span class="sourceLineNo">254</span><a id="line.254">        for ( int i = 0; i &lt;= ITERATIONS; i++ )</a>
+<span class="sourceLineNo">255</span><a id="line.255">        {</a>
+<span class="sourceLineNo">256</span><a id="line.256">            Role roleSysAdmin = rbacManager.getRole( roleIdSysAdmin );</a>
+<span class="sourceLineNo">257</span><a id="line.257">            Role roleUserAdmin = rbacManager.getRole( roleIdUserAdmin );</a>
+<span class="sourceLineNo">258</span><a id="line.258"></a>
+<span class="sourceLineNo">259</span><a id="line.259">            assertNotNull( roleSysAdmin );</a>
+<span class="sourceLineNo">260</span><a id="line.260">            assertNotNull( roleUserAdmin );</a>
+<span class="sourceLineNo">261</span><a id="line.261"></a>
+<span class="sourceLineNo">262</span><a id="line.262">            assertEquals( roleIdSysAdmin, roleSysAdmin.getName() );</a>
+<span class="sourceLineNo">263</span><a id="line.263">            assertEquals( roleIdUserAdmin, roleUserAdmin.getName() );</a>
+<span class="sourceLineNo">264</span><a id="line.264">        }</a>
+<span class="sourceLineNo">265</span><a id="line.265"></a>
+<span class="sourceLineNo">266</span><a id="line.266">        long endTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">267</span><a id="line.267"></a>
+<span class="sourceLineNo">268</span><a id="line.268">        assertPerformance( "Roles", startTime, endTime, ITERATIONS, 130 );</a>
+<span class="sourceLineNo">269</span><a id="line.269">    }</a>
+<span class="sourceLineNo">270</span><a id="line.270"></a>
+<span class="sourceLineNo">271</span><a id="line.271">    @Test</a>
+<span class="sourceLineNo">272</span><a id="line.272">    public void testPerformancePermissions()</a>
+<span class="sourceLineNo">273</span><a id="line.273">        throws RbacManagerException</a>
+<span class="sourceLineNo">274</span><a id="line.274">    {</a>
+<span class="sourceLineNo">275</span><a id="line.275">        rbacDefaults.createDefaults();</a>
+<span class="sourceLineNo">276</span><a id="line.276"></a>
+<span class="sourceLineNo">277</span><a id="line.277">        String permIdRunIndexer = "Run Indexer";</a>
+<span class="sourceLineNo">278</span><a id="line.278">        String permIdAddRepo = "Add Repository";</a>
+<span class="sourceLineNo">279</span><a id="line.279"></a>
+<span class="sourceLineNo">280</span><a id="line.280">        long startTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">281</span><a id="line.281"></a>
+<span class="sourceLineNo">282</span><a id="line.282">        for ( int i = 0; i &lt;= ITERATIONS; i++ )</a>
+<span class="sourceLineNo">283</span><a id="line.283">        {</a>
+<span class="sourceLineNo">284</span><a id="line.284">            Permission permRunIndex = rbacManager.getPermission( permIdRunIndexer );</a>
+<span class="sourceLineNo">285</span><a id="line.285">            Permission permAddRepo = rbacManager.getPermission( permIdAddRepo );</a>
+<span class="sourceLineNo">286</span><a id="line.286"></a>
+<span class="sourceLineNo">287</span><a id="line.287">            assertNotNull( permRunIndex );</a>
+<span class="sourceLineNo">288</span><a id="line.288">            assertNotNull( permAddRepo );</a>
+<span class="sourceLineNo">289</span><a id="line.289"></a>
+<span class="sourceLineNo">290</span><a id="line.290">            assertEquals( permIdRunIndexer, permRunIndex.getName() );</a>
+<span class="sourceLineNo">291</span><a id="line.291">            assertEquals( permIdAddRepo, permAddRepo.getName() );</a>
+<span class="sourceLineNo">292</span><a id="line.292">        }</a>
+<span class="sourceLineNo">293</span><a id="line.293"></a>
+<span class="sourceLineNo">294</span><a id="line.294">        long endTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">295</span><a id="line.295"></a>
+<span class="sourceLineNo">296</span><a id="line.296">        assertPerformance( "Permissions", startTime, endTime, ITERATIONS, 350 );</a>
+<span class="sourceLineNo">297</span><a id="line.297">    }</a>
+<span class="sourceLineNo">298</span><a id="line.298"></a>
+<span class="sourceLineNo">299</span><a id="line.299">    @Test</a>
+<span class="sourceLineNo">300</span><a id="line.300">    public void testPerformanceOperations()</a>
+<span class="sourceLineNo">301</span><a id="line.301">        throws RbacManagerException</a>
+<span class="sourceLineNo">302</span><a id="line.302">    {</a>
+<span class="sourceLineNo">303</span><a id="line.303">        rbacDefaults.createDefaults();</a>
+<span class="sourceLineNo">304</span><a id="line.304"></a>
+<span class="sourceLineNo">305</span><a id="line.305">        String operIdEditRepo = "edit-repository";</a>
+<span class="sourceLineNo">306</span><a id="line.306">        String operIdDelRepo = "delete-repository";</a>
+<span class="sourceLineNo">307</span><a id="line.307"></a>
+<span class="sourceLineNo">308</span><a id="line.308">        long startTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">309</span><a id="line.309"></a>
+<span class="sourceLineNo">310</span><a id="line.310">        for ( int i = 0; i &lt;= ITERATIONS; i++ )</a>
+<span class="sourceLineNo">311</span><a id="line.311">        {</a>
+<span class="sourceLineNo">312</span><a id="line.312">            Operation operEditRepo = rbacManager.getOperation( operIdEditRepo );</a>
+<span class="sourceLineNo">313</span><a id="line.313">            Operation operDelRepo = rbacManager.getOperation( operIdDelRepo );</a>
+<span class="sourceLineNo">314</span><a id="line.314"></a>
+<span class="sourceLineNo">315</span><a id="line.315">            assertNotNull( operEditRepo );</a>
+<span class="sourceLineNo">316</span><a id="line.316">            assertNotNull( operDelRepo );</a>
+<span class="sourceLineNo">317</span><a id="line.317"></a>
+<span class="sourceLineNo">318</span><a id="line.318">            assertEquals( operIdEditRepo, operEditRepo.getName() );</a>
+<span class="sourceLineNo">319</span><a id="line.319">            assertEquals( operIdDelRepo, operDelRepo.getName() );</a>
+<span class="sourceLineNo">320</span><a id="line.320">        }</a>
+<span class="sourceLineNo">321</span><a id="line.321"></a>
+<span class="sourceLineNo">322</span><a id="line.322">        long endTime = System.currentTimeMillis();</a>
+<span class="sourceLineNo">323</span><a id="line.323"></a>
+<span class="sourceLineNo">324</span><a id="line.324">        assertPerformance( "Operations", startTime, endTime, ITERATIONS, 500 );</a>
+<span class="sourceLineNo">325</span><a id="line.325">    }</a>
+<span class="sourceLineNo">326</span><a id="line.326">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

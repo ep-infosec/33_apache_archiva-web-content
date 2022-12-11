@@ -1,0 +1,230 @@
+body {
+    padding-top: 1px;
+}
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/** start of asciidoc specific styles **/
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:50%;border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+
+/** end of asciidoc specific styles **/
+
+
+a.externalLink[href^="http"] {
+    background: url('../images/external-link-12x12.png') right center no-repeat;
+    padding-right: 18px;
+}
+
+a.externalLink[href^="https"] {
+    background: url('../images/external-link-12x12.png') right center no-repeat;
+    padding-right: 18px;
+}
+
+#leftColumn {
+  display: none !important
+}
+
+#bodyColumn {
+  margin-left: 1.5em;
+}
+
+div#rhs {
+  float: right;
+  text-align: center;
+}
+
+div.mainBox {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 75%;
+  background-color: #ccc;
+  position: relative;
+  padding-left: 5em;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+div.mainBox div {
+  padding: 0.4em;
+}
+
+div.newsBox {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 75%;
+  background-color: #ccc;
+  position: relative;
+  padding-left: 8em;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+div.newsBox div {
+  padding: 0.6em;
+}
+
+div.mainBox span + p a {
+  background: url(../images/arrow.png) no-repeat;
+  background-size: 16px 16px;
+  background-position: right;
+  padding-right: 20px;
+}
+
+div.mainBox span + p a {
+  font-size: 1.5em;
+  /*color: black;*/ 
+}
+
+div.mainBox span + p a:hover {
+  /*color: blue;*/
+}
+
+.bignumber {
+  position: absolute;
+  color: white;
+  left: 0.25em;
+  font-size: 1.9em;
+}
+
+div.linkBox p {
+  text-align: right;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+#banner {
+  background: none;
+}
+
+#banner img {
+  margin: 10px;
+}
+
+div.jqmWindow h2, div.jqmWindow p {
+  text-align: center;
+}
+
+span.jqmClose {
+  position: absolute;
+  cursor: pointer;
+  right: 4px;
+  top: 6px;
+}
+
+
+ div.section {
+  margin-right: 110px;
+  margin-left: 10px;
+ }
+ 
+.hero-unit p {
+ /* font-weight: inherit;*/
+}
+
+.archivascreenshots {
+  border: 1px solid silver; 
+  margin-left: 0.25em; 
+  margin-bottom: 0.25em
+}
+
+.rhs span {
+  display: block; 
+  font-size: 13px; 
+  font-weight: bold; 
+  margin-top: 1.5em; 
+  margin-bottom: 1.5em;    
+}
+
+.container ul li iframe {
+  margin-top: 4px;
+  margin-right: 4px;
+}
+
+.modal-body table {
+  border: 0px;
+}
+
+
+.features-preview:after {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 0 4px 0;
+    color: #9DA0A4;
+    content: "New web UI";
+    font-size: 12px;
+    font-weight: bold;
+    left: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    top: -1px;
+
+}
+.features-preview {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 4px 4px 4px;
+    margin: 15px 0;
+    padding: 39px 19px 14px;
+    position: relative;
+    min-height: 450px;
+}
+
+.carousel .item > img {
+  min-height: 400px;
+}
